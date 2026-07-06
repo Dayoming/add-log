@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.add.log.dao.LogWDao">
+    <!--  로그 등록  -->
+    <insert id="insertLogs">
+        INSERT INTO public.logs (
+            run_id,
+            event_type,
+            submit_turn,
+            timestamp,
+            log
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.runId},
+                #{item.eventType},
+                #{item.submitTurn},
+                #{item.timestamp},
+                #{item.log, typeHandler=com.add.log.util.JsonTypeHandler}
+            )
+        </foreach>
+    </insert>
+</mapper>
