@@ -3,6 +3,7 @@ package com.add.log.svc;
 import com.add.log.dao.LogWDao;
 import com.add.log.dto.GameLogDto;
 import com.add.log.dto.LogRequestDto;
+import com.add.log.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,12 @@ public class LogSvc {
     private LogWDao logWDao;
 
     public ResponseEntity<String> receiveLogs(LogRequestDto requestDto) {
+
+        // logs가 포함되어 있지 않은 경우 예외 발생
+        if (requestDto == null || requestDto.getLogs() == null || requestDto.getLogs().isEmpty()) {
+            throw new InvalidRequestException("요청에 필수 데이터('logs')가 포함되어 있지 않거나 비어 있습니다.");
+        }
+
         List<GameLogDto> gameLogs = new ArrayList<>();
 
         for (Map<String, Object> logMap : requestDto.getLogs()) {
