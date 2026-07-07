@@ -3,9 +3,11 @@ package com.add.log.svc;
 import com.add.log.dao.LogDao;
 import com.add.log.dto.GameLogDto;
 import com.add.log.dto.LogRequestDto;
+import com.add.log.exception.ApiResponse;
 import com.add.log.exception.DuplicateRequestException;
 import com.add.log.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +22,7 @@ public class LogSvc {
     @Autowired
     private LogDao logDao;
 
-    public ResponseEntity<String> receiveLogs(LogRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<?>> receiveLogs(LogRequestDto requestDto) {
 
         // logs가 포함되어 있지 않은 경우 예외 발생
         if (requestDto == null || requestDto.getLogs() == null || requestDto.getLogs().isEmpty()) {
@@ -59,7 +61,8 @@ public class LogSvc {
         }
 
         logDao.insertLogs(gameLogs);
-        return ResponseEntity.ok("Logs saved successfully");
+        ApiResponse<Void> response = ApiResponse.success(HttpStatus.OK, "로그 저장 완료");
+        return ResponseEntity.ok(response);
     }
 
 }

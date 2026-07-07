@@ -1,5 +1,6 @@
 package com.add.log.ctrl;
 
+import com.add.log.exception.ApiResponse;
 import com.add.log.svc.LogSvc;
 import com.add.log.dto.LogRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class LogController {
      * @return
      */
     @PostMapping
-    public ResponseEntity<String> receiveLogs(@RequestBody LogRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<?>> receiveLogs(@RequestBody LogRequestDto requestDto) {
         return logSvc.receiveLogs(requestDto);
     }
 }
