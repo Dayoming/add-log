@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.add.log.dao.LogWDao">
+<mapper namespace="com.add.log.dao.LogDao">
     <!--  로그 등록  -->
     <insert id="insertLogs">
         INSERT INTO public.logs (
@@ -20,4 +20,16 @@
             )
         </foreach>
     </insert>
+
+    <!--  로그 조회 By runId  -->
+    <select id="getLogByRunId" resultType="com.add.log.dto.GameLogDto">
+        SELECT
+            run_id AS runId,
+            event_type AS eventType,
+            submit_turn AS submitTurn,
+            timestamp,
+            log
+        FROM public.logs
+        WHERE run_id = #{runId}
+    </select>
 </mapper>
