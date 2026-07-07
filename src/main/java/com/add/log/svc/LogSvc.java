@@ -3,8 +3,6 @@ package com.add.log.svc;
 import com.add.log.dao.LogWDao;
 import com.add.log.dto.GameLogDto;
 import com.add.log.dto.LogRequestDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,10 +18,7 @@ public class LogSvc {
     @Autowired
     private LogWDao logWDao;
 
-    private Logger log = LoggerFactory.getLogger(getClass());
-
     public ResponseEntity<String> receiveLogs(LogRequestDto requestDto) {
-        log.info("requestDto: " + requestDto);
         List<GameLogDto> gameLogs = new ArrayList<>();
 
         for (Map<String, Object> logMap : requestDto.getLogs()) {

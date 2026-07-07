@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import tools.jackson.databind.ObjectMapper;
@@ -48,15 +49,15 @@ public class LoggingFilter implements Filter {
 
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request, CACHE_LIMIT);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
-        String logKey = generateLogKey();
 
+        String logKey = generateLogKey();
         String requestTime = LocalDateTime.now().format(FORMATTER);
-        logStart(logKey, requestTime, requestWrapper);
 
         try {
             // 다음 필터 또는 컨트롤러로 요청 전달
             chain.doFilter(requestWrapper, responseWrapper);
         } finally {
+            logStart(logKey, requestTime, requestWrapper);
             String responseTime = LocalDateTime.now().format(FORMATTER);
             logEnd(logKey, responseTime, responseWrapper);
 
@@ -74,8 +75,9 @@ public class LoggingFilter implements Filter {
      */
     private void logStart(String logKey, String requestTime, ContentCachingRequestWrapper request) {
         // CALL LOG
-        log.info(String.format("[%s]==   START CALL LOG  ==================================================", logKey));
+        CALL_LOGGER.info(String.format("[%s]=============================   START CALL LOG  ==================================================", logKey));
         CALL_LOGGER.info(String.format("[%s][REQUEST] [%s] URI : %s", logKey, requestTime, request.getRequestURI()));
+
         // HTTP Header 출력
         try {
             String headersJson = getHeadersAsJson(request);
@@ -104,7 +106,7 @@ public class LoggingFilter implements Filter {
 
         // CALL 로그 기록 (응답 본문 및 성공/실패 메시지 포함)
         CALL_LOGGER.info(String.format("[%s][RESPONSE] [%s] %d %s %s", logKey, responseTime, statusCode, statusMessage, responseBody));
-        CALL_LOGGER.info(String.format("[%s]==   END CALL LOG    ==================================================", logKey));
+        CALL_LOGGER.info(String.format("[%s]=============================   END CALL LOG    ==================================================", logKey));
     }
 
     /**
