@@ -23,10 +23,16 @@ public class LogSvc {
     private LogDao logDao;
 
     public ResponseEntity<ApiResponse<?>> receiveLogs(LogRequestDto requestDto) {
+        ApiResponse<Void> response = null;
 
         // logs가 포함되어 있지 않은 경우 예외 발생
-        if (requestDto == null || requestDto.getLogs() == null || requestDto.getLogs().isEmpty()) {
-            throw new InvalidRequestException("요청에 필수 데이터('logs')가 포함되어 있지 않거나 비어 있습니다.");
+        if (requestDto == null || requestDto.getLogs() == null) {
+            throw new InvalidRequestException("요청에 필수 데이터('logs')가 포함되어 있지 않습니다.");
+        }
+
+        if (requestDto.getLogs().isEmpty()) {
+            response = ApiResponse.success(HttpStatus.OK, "로그가 비어 있습니다.");
+            return ResponseEntity.ok(response);
         }
 
         List<GameLogDto> gameLogs = new ArrayList<>();
@@ -61,7 +67,7 @@ public class LogSvc {
         }
 
         logDao.insertLogs(gameLogs);
-        ApiResponse<Void> response = ApiResponse.success(HttpStatus.OK, "로그 저장 완료");
+        response = ApiResponse.success(HttpStatus.OK, "로그 저장 완료");
         return ResponseEntity.ok(response);
     }
 
