@@ -19,14 +19,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // 중복된 runId 요청 (400 Bad Request)
-    @ExceptionHandler(DuplicateRequestException.class)
-    public ResponseEntity<ApiResponse> DuplicateRequestException(DuplicateRequestException ex) {
-        ApiResponse<Void> response = ApiResponse.error(HttpStatus.BAD_REQUEST,
-                ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
     // 날짜 파싱 오류 (400 Bad Request)
     @ExceptionHandler(DateTimeParseException.class)
     public ResponseEntity<ApiResponse> handleDateTimeParse(DateTimeParseException ex) {
