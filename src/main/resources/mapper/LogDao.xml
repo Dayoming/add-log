@@ -1,35 +1,58 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.add.log.dao.LogDao">
-    <!--  로그 등록  -->
-    <insert id="insertLogs">
-        INSERT INTO public.logs (
+    <!--  배치 로그 등록  -->
+    <insert id="insertBatchLogs">
+        INSERT INTO public.log_batches (
+            batch_id,
+            client_id,
+            session_id,
             run_id,
-            event_type,
-            submit_turn,
-            timestamp,
-            log
+            game_version,
+            schema_version,
+            sent_at
+        ) VALUES (
+            #{batchId},
+            #{clientId},
+            #{sessionId},
+            #{runId, jdbcType=VARCHAR},
+            #{gameVersion},
+            #{schemaVersion},
+            #{sentAt}
+        )
+    </insert>
+
+    <!--  게임 로그 등록  -->
+    <insert id="insertGameLogs">
+        INSERT INTO public.game_logs (
+            log_id,
+            batch_id,
+            event_name,
+            event_version,
+            occurred_at,
+            sequence,
+            session_elapsed_ms,
+            run_elapsed_ms,
+            stage_elapsed_ms,
+            stage_id,
+            playthrough_count,
+            payload
         ) VALUES
         <foreach collection="list" item="item" separator=",">
             (
-                #{item.runId},
-                #{item.eventType},
-                #{item.submitTurn},
-                #{item.timestamp},
-                #{item.log, typeHandler=com.add.log.util.JsonTypeHandler}
+                #{item.logId},
+                #{item.batchId},
+                #{item.eventName},
+                #{item.eventVersion},
+                #{item.occurredAt},
+                #{item.sequence},
+                #{item.sessionElapsedMs},
+                #{item.runElapsedMs, jdbcType=INTEGER},
+                #{item.stageElapsedMs, jdbcType=INTEGER},
+                #{item.stageId, jdbcType=VARCHAR},
+                #{item.playthroughCount},
+                #{item.payload, typeHandler=com.add.log.util.JsonTypeHandler}
             )
         </foreach>
     </insert>
-
-    <!--  로그 조회 By runId  -->
-    <select id="getLogByRunId" resultType="com.add.log.dto.GameLogDto">
-        SELECT
-            run_id AS runId,
-            event_type AS eventType,
-            submit_turn AS submitTurn,
-            timestamp,
-            log
-        FROM public.logs
-        WHERE run_id = #{runId}
-    </select>
 </mapper>

@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleDatabaseException(DataAccessException ex) {
         // 보안을 위해 상세한 SQL 에러 대신 추상화된 메시지를 제공하는 것이 좋습니다.
         ApiResponse<Void> response = ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,
-                "데이터베이스 처리 중 오류가 발생했습니다.");
+                "데이터베이스 처리 중 오류가 발생했습니다.: " + ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
