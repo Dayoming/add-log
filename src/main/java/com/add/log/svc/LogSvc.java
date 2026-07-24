@@ -40,7 +40,6 @@ public class LogSvc {
         logBatchesDto.setBatchId(requestDto.getBatchId());
         logBatchesDto.setClientId(requestDto.getClientId());
         logBatchesDto.setSessionId(requestDto.getSessionId());
-        logBatchesDto.setRunId(requestDto.getRunId());
         logBatchesDto.setGameVersion(requestDto.getGameVersion());
         logBatchesDto.setSchemaVersion(requestDto.getSchemaVersion());
         logBatchesDto.setSentAt(requestDto.getSentAt());
@@ -51,6 +50,7 @@ public class LogSvc {
         for (Map<String, Object> logMap : requestDto.getLogs()) {
             GameLogsDto gameLog = new GameLogsDto();
             // 개별 컬럼으로 매핑할 값 추출
+            gameLog.setRunId((String) logMap.get("run_id"));
             gameLog.setLogId((String) logMap.get("log_id"));
             gameLog.setBatchId(requestDto.getBatchId());
             gameLog.setEventName((String) logMap.get("event_name"));

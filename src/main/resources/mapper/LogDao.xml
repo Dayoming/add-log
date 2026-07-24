@@ -7,7 +7,6 @@
             batch_id,
             client_id,
             session_id,
-            run_id,
             game_version,
             schema_version,
             sent_at
@@ -15,7 +14,6 @@
             #{batchId},
             #{clientId},
             #{sessionId},
-            #{runId, jdbcType=VARCHAR},
             #{gameVersion},
             #{schemaVersion},
             #{sentAt}
@@ -27,6 +25,7 @@
         INSERT INTO public.game_logs (
             log_id,
             batch_id,
+            run_id,
             event_name,
             event_version,
             occurred_at,
@@ -42,6 +41,7 @@
             (
                 #{item.logId},
                 #{item.batchId},
+                #{item.runId, jdbcType=VARCHAR},
                 #{item.eventName},
                 #{item.eventVersion},
                 #{item.occurredAt},

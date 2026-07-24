@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class GameLogsDto {
     private String logId;
     private String batchId;
+    private String runId;
     private String eventName;
     private Integer eventVersion;
     private LocalDateTime occurredAt;
