@@ -1,10 +1,12 @@
 package com.add.log.svc;
 
 import com.add.log.dao.LogDao;
-import com.add.log.dto.GameLogsDto;
+import com.add.log.dto.GameLogDto;
 import com.add.log.dto.LogBatchesDto;
 import com.add.log.exception.ApiResponse;
 import com.add.log.exception.InvalidRequestException;
+import com.add.log.handler.EventLogHandler;
+import com.add.log.handler.LogEventContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class LogSvc {
     @Autowired
     private LogDao logDao;
 
+    @Autowired
+    private List<EventLogHandler> eventLogHandlers;
+
     @Transactional
     public ResponseEntity<ApiResponse<?>> receiveLogs(LogBatchesDto requestDto) {
         ApiResponse<Void> response = null;
@@ -36,6 +41,14 @@ public class LogSvc {
             return ResponseEntity.ok(response);
         }
 
+        insertBatchLogs(requestDto);
+        insertGameAndEventLogs(requestDto);
+
+        response = ApiResponse.success(HttpStatus.OK, "로그 저장 완료");
+        return ResponseEntity.ok(response);
+    }
+
+    private void insertBatchLogs(LogBatchesDto requestDto) {
         LogBatchesDto logBatchesDto = new LogBatchesDto();
         logBatchesDto.setBatchId(requestDto.getBatchId());
         logBatchesDto.setClientId(requestDto.getClientId());
@@ -44,11 +57,13 @@ public class LogSvc {
         logBatchesDto.setSchemaVersion(requestDto.getSchemaVersion());
         logBatchesDto.setSentAt(requestDto.getSentAt());
         logDao.insertBatchLogs(logBatchesDto);
+    }
 
-        List<GameLogsDto> gameLogs = new ArrayList<>();
+    private void insertGameAndEventLogs(LogBatchesDto requestDto) {
+        List<GameLogDto> gameLogs = new ArrayList<>();
 
         for (Map<String, Object> logMap : requestDto.getLogs()) {
-            GameLogsDto gameLog = new GameLogsDto();
+            GameLogDto gameLog = new GameLogDto();
             // 개별 컬럼으로 매핑할 값 추출
             gameLog.setRunId((String) logMap.get("run_id"));
             gameLog.setLogId((String) logMap.get("log_id"));
@@ -67,13 +82,35 @@ public class LogSvc {
             gameLog.setStageElapsedMs((Integer) logMap.get("stage_elapsed_ms"));
             gameLog.setStageId((String) logMap.get("stage_id"));
             gameLog.setPlaythroughCount((Integer) logMap.get("playthrough_count"));
-            gameLog.setPayload(logMap.get("payload"));
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payload = (Map<String, Object>) logMap.get("payload");
+            gameLog.setPayload(payload);
             gameLogs.add(gameLog);
+
+            // event_name에 맞는 핸들러 찾아서 위임
+            String eventName = (String) logMap.get("event_name");
+
+            LogEventContext ctx = new LogEventContext(
+                    requestDto.getBatchId(),
+                    requestDto.getSessionId(),
+                    logMap,
+                    ZonedDateTime.parse((String) logMap.get("occurred_at")).toLocalDateTime(),
+                    payload
+            );
+
+            for (EventLogHandler handler : eventLogHandlers) {
+                if (handler.supports(eventName)) {
+                    handler.collect(ctx);
+                    break;
+                }
+            }
         }
 
         logDao.insertGameLogs(gameLogs);
-        response = ApiResponse.success(HttpStatus.OK, "로그 저장 완료");
-        return ResponseEntity.ok(response);
-    }
 
+        for (EventLogHandler handler : eventLogHandlers) {
+            handler.flush();
+        }
+    }
 }

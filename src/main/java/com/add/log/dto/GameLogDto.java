@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class GameLogsDto {
+public class GameLogDto {
     private String logId;
     private String batchId;
     private String runId;
