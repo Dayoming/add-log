@@ -14,9 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LogSvc {
@@ -42,10 +41,37 @@ public class LogSvc {
         }
 
         insertBatchLogs(requestDto);
+
+        List<Map<String, Object>> logsToProcess = filterNewLogs(requestDto.getLogs());
+
+        if (logsToProcess.isEmpty()) {
+            response = ApiResponse.success(HttpStatus.OK, "이미 저장된 로그입니다.");
+            return ResponseEntity.ok(response);
+        }
+
         insertGameAndEventLogs(requestDto);
 
         response = ApiResponse.success(HttpStatus.OK, "로그 저장 완료");
         return ResponseEntity.ok(response);
+    }
+
+    // 같은 요청 안의 중복 log_id 제거, 이미 DB에 저장된 log_id 제외
+    private List<Map<String, Object>> filterNewLogs(List<Map<String, Object>> logs) {
+        // 요청 내 중복 제거
+        Map<String, Map<String, Object>> dedupedByLogId = new LinkedHashMap<>();
+        for (Map<String, Object> logMap : logs) {
+            String logId = (String) logMap.get("log_id");
+            dedupedByLogId.putIfAbsent(logId, logMap);
+        }
+
+        // 이미 저장된 log_id 조회 후 제외
+        List<String> candidateLogIds = new ArrayList<>(dedupedByLogId.keySet());
+        List<String> existingLogIds = logDao.findExistingLogIds(candidateLogIds);
+        Set<String> existingSet = new HashSet<>(existingLogIds);
+
+        return dedupedByLogId.values().stream()
+                .filter(logMap -> !existingSet.contains((String) logMap.get("log_id")))
+                .collect(Collectors.toList());
     }
 
     private void insertBatchLogs(LogBatchesDto requestDto) {

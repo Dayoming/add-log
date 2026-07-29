@@ -27,4 +27,7 @@ public interface LogDao {
     void insertEdgeBlockLogs(List<EdgeBlockLogDto> edgeBlockLogs);
     // 청사진 이용 로그 등록
     void insertBlueprintLogs(List<BlueprintLogDto> blueprintLogs);
+
+    // logId 조회
+    List<String> findExistingLogIds(List<String> logIds);
 }

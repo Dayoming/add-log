@@ -54,6 +54,7 @@
                 #{item.payload, typeHandler=com.add.log.handler.JsonTypeHandler}
             )
         </foreach>
+        ON CONFLICT (log_id) DO NOTHING
     </insert>
 
     <!--  세션 로그 등록  -->
@@ -357,4 +358,14 @@
             )
         </foreach>
     </insert>
+
+    <!--  logId 조회  -->
+    <select id="findExistingLogIds" resultType="string">
+        SELECT log_id
+        FROM common_game_logs
+        WHERE log_id IN
+        <foreach collection="list" item="logId" open="(" separator="," close=")">
+            #{logId, jdbcType=VARCHAR}
+        </foreach>
+    </select>
 </mapper>
