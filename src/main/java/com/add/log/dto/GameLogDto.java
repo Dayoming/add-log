@@ -17,6 +17,7 @@ public class GameLogDto {
     private Integer runElapsedMs;
     private Integer stageElapsedMs;
     private String stageId;
+    private Integer stageClearCount;
     private Integer playthroughCount;
     private Object payload;
 }

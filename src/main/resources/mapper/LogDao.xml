@@ -34,6 +34,7 @@
             run_elapsed_ms,
             stage_elapsed_ms,
             stage_id,
+            stage_clear_count,
             playthrough_count,
             payload
         ) VALUES
@@ -50,6 +51,7 @@
                 #{item.runElapsedMs, jdbcType=INTEGER},
                 #{item.stageElapsedMs, jdbcType=INTEGER},
                 #{item.stageId, jdbcType=VARCHAR},
+                #{item.stageClearCount, jdbdType=INTEGER},
                 #{item.playthroughCount},
                 #{item.payload, typeHandler=com.add.log.handler.JsonTypeHandler}
             )

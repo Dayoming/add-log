@@ -107,6 +107,7 @@ public class LogSvc {
             gameLog.setRunElapsedMs((Integer) logMap.get("run_elapsed_ms"));
             gameLog.setStageElapsedMs((Integer) logMap.get("stage_elapsed_ms"));
             gameLog.setStageId((String) logMap.get("stage_id"));
+            gameLog.setStageClearCount((Integer) logMap.get("stage_clear_count"));
             gameLog.setPlaythroughCount((Integer) logMap.get("playthrough_count"));
 
             @SuppressWarnings("unchecked")
