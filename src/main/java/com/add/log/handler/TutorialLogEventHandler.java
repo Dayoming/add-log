@@ -40,8 +40,10 @@ public class TutorialLogEventHandler implements EventLogHandler {
         dto.setStageId(ctx.getStageId());
         dto.setBatchId(ctx.getBatchId());
         dto.setSessionId(ctx.getSessionId());
+        dto.setClientId(ctx.getClientId());
         dto.setEventName(eventName);
         dto.setOccurredAt(ctx.getOccurredAt());
+        dto.setPlaythroughCount(ctx.getPlaythroughCount());
 
         dto.setTutorialId((String) payload.get("tutorial_id"));
 

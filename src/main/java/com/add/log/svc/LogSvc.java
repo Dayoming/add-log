@@ -94,6 +94,7 @@ public class LogSvc {
             LogEventContext ctx = new LogEventContext(
                     requestDto.getBatchId(),
                     requestDto.getSessionId(),
+                    requestDto.getClientId(),
                     logMap,
                     ZonedDateTime.parse((String) logMap.get("occurred_at")).toLocalDateTime(),
                     payload

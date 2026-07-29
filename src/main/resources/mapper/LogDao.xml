@@ -258,6 +258,7 @@
             stage_id,
             batch_id,
             session_id,
+            client_id,
             event_name,
             occurred_at,
             tutorial_id,
@@ -268,7 +269,8 @@
             completed_step_count,
             skipped_at_step_id,
             skipped_at_step_order,
-            elapsed_before_skip_ms
+            elapsed_before_skip_ms,
+            playthrough_count
         ) VALUES
         <foreach collection="list" item="item" separator=",">
             (
@@ -277,6 +279,7 @@
                 #{item.stageId, jdbcType=VARCHAR},
                 #{item.batchId, jdbcType=VARCHAR},
                 #{item.sessionId, jdbcType=VARCHAR},
+                #{item.clientId, jdbcType=VARCHAR},
                 #{item.eventName, jdbcType=VARCHAR},
                 #{item.occurredAt, jdbcType=TIMESTAMP},
                 #{item.tutorialId, jdbcType=VARCHAR},
@@ -287,9 +290,12 @@
                 #{item.completedStepCount, jdbcType=INTEGER},
                 #{item.skippedAtStepId, jdbcType=VARCHAR},
                 #{item.skippedAtStepOrder, jdbcType=INTEGER},
-                #{item.elapsedBeforeSkipMs, jdbcType=BIGINT}
+                #{item.elapsedBeforeSkipMs, jdbcType=BIGINT},
+                #{item.playthroughCount, jdbcType=INTEGER}
             )
         </foreach>
+        ON CONFLICT (client_id) WHERE event_name = 'TUTORIAL_COMPLETED' AND playthrough_count = 0
+        DO NOTHING
     </insert>
 
     <!--  프로토콜 제작 및 사용 로그 등록  -->

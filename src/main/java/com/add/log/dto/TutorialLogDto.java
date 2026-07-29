@@ -11,8 +11,10 @@ public class TutorialLogDto {
     private String stageId;
     private String batchId;
     private String sessionId;
+    private String clientId;
     private String eventName;
     private LocalDateTime occurredAt;
+    private Integer playthroughCount;
 
     private String tutorialId;
 
