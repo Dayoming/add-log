@@ -51,7 +51,7 @@
                 #{item.runElapsedMs, jdbcType=INTEGER},
                 #{item.stageElapsedMs, jdbcType=INTEGER},
                 #{item.stageId, jdbcType=VARCHAR},
-                #{item.stageClearCount, jdbdType=INTEGER},
+                #{item.stageClearCount, jdbcType=INTEGER},
                 #{item.playthroughCount},
                 #{item.payload, typeHandler=com.add.log.handler.JsonTypeHandler}
             )
